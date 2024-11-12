@@ -16,6 +16,8 @@ const tasks: {
       updated_at: "2023-11-15T09:30:00.000Z",
       priority: Priority.HIGH,
       assignee: "Jane Smith",
+      description:
+        "Make sure it looks pretty on screens of all sizes—even that tiny smartwatch no one really uses for browsing.",
     },
     {
       id: 2,
@@ -26,6 +28,8 @@ const tasks: {
       updated_at: "2023-11-18T14:20:00.000Z",
       priority: Priority.URGENT,
       assignee: "Michael Johnson",
+      description:
+        "The only way to prove you’re human without actually solving a riddle or clicking traffic lights.",
     },
     {
       id: 3,
@@ -36,6 +40,8 @@ const tasks: {
       updated_at: "2023-11-20T11:45:00.000Z",
       priority: Priority.MEDIUM,
       assignee: "Emily Davis",
+      description:
+        "Find out what our customers think, while secretly hoping they don’t ask for free coffee.",
     },
     {
       id: 4,
@@ -46,6 +52,8 @@ const tasks: {
       updated_at: "2023-11-22T16:10:00.000Z",
       priority: Priority.LOW,
       assignee: "David Lee",
+      description:
+        "For those late-night scrollers who like their screens as dark as their coffee.",
     },
     {
       id: 5,
@@ -56,6 +64,8 @@ const tasks: {
       updated_at: "2023-11-25T08:00:00.000Z",
       priority: Priority.HIGH,
       assignee: "Sarah Kim",
+      description:
+        "Because nothing says ‘progress’ like a dashboard with 25 colorful pie charts.",
     },
     {
       id: 6,
@@ -66,6 +76,8 @@ const tasks: {
       updated_at: "2023-11-27T13:30:00.000Z",
       priority: Priority.MEDIUM,
       assignee: "Alex Patel",
+      description:
+        "Help us decide if users prefer the blue button...or the slightly darker blue button.",
     },
     {
       id: 7,
@@ -76,6 +88,8 @@ const tasks: {
       updated_at: "2023-11-30T15:45:00.000Z",
       priority: Priority.MEDIUM,
       assignee: "Samantha Flores",
+      description:
+        "Because we want our website to be the first thing you see—even when you’re looking for something else.",
     },
     {
       id: 8,
@@ -86,6 +100,8 @@ const tasks: {
       updated_at: "2023-12-02T10:15:00.000Z",
       priority: Priority.LOW,
       assignee: "John Doe",
+      description:
+        "Nothing says ‘we care’ like 17 promotional emails in a week. Time to automate that love!",
     },
     {
       id: 9,
@@ -96,6 +112,8 @@ const tasks: {
       updated_at: "2023-12-05T14:00:00.000Z",
       priority: Priority.HIGH,
       assignee: "Jane Smith",
+      description:
+        "Because it’s time our payment gateway stopped acting like a picky bouncer on Friday night.",
     },
     {
       id: 10,
@@ -106,6 +124,8 @@ const tasks: {
       updated_at: "2023-12-08T11:35:00.000Z",
       priority: Priority.MEDIUM,
       assignee: "Michael Johnson",
+      description:
+        "Make our new users feel as welcome as a guest with fresh cookies and a name tag.",
     },
   ],
   [TaskStatus.IN_PROGRESS]: [
@@ -118,6 +138,8 @@ const tasks: {
       updated_at: "2023-11-17T14:30:00.000Z",
       priority: Priority.HIGH,
       assignee: "Sarah Kim",
+      description:
+        "Because sometimes our code is as messy as a Monday morning desk.",
     },
     {
       id: 12,
@@ -128,6 +150,8 @@ const tasks: {
       updated_at: "2023-11-19T10:15:00.000Z",
       priority: Priority.MEDIUM,
       assignee: "Alex Patel",
+      description:
+        "The closest thing to hiring a psychic—anticipating customer complaints before they start.",
     },
     {
       id: 13,
@@ -138,6 +162,8 @@ const tasks: {
       updated_at: "2023-11-21T18:30:00.000Z",
       priority: Priority.MEDIUM,
       assignee: "Samantha Flores",
+      description:
+        "Making sure users find what they’re looking for—even if they can’t spell it right.",
     },
     {
       id: 14,
@@ -148,6 +174,8 @@ const tasks: {
       updated_at: "2023-11-28T16:45:00.000Z",
       priority: Priority.HIGH,
       assignee: "John Doe",
+      description:
+        "Because nothing says ‘data-driven’ like charts with way too many colors.",
     },
     {
       id: 15,
@@ -158,6 +186,7 @@ const tasks: {
       updated_at: "2023-12-03T14:10:00.000Z",
       priority: Priority.MEDIUM,
       assignee: "Jane Smith",
+      description: "The grass is always greener...on the newer CRM system.",
     },
     {
       id: 16,
@@ -168,6 +197,8 @@ const tasks: {
       updated_at: "2023-12-06T15:20:00.000Z",
       priority: Priority.LOW,
       assignee: "Michael Johnson",
+      description:
+        "Because sometimes, all we want is a good old-fashioned spreadsheet.",
     },
     {
       id: 17,
@@ -178,6 +209,8 @@ const tasks: {
       updated_at: "2023-12-09T13:00:00.000Z",
       priority: Priority.HIGH,
       assignee: "Emily Davis",
+      description:
+        "To infinity and beyond! Scaling our system without lifting a server.",
     },
   ],
   [TaskStatus.CLOSED]: [
@@ -190,6 +223,8 @@ const tasks: {
       updated_at: "2023-11-08T17:45:00.000Z",
       priority: Priority.HIGH,
       assignee: "John Doe",
+      description:
+        "Because everyone loves a dashboard... until they have to maintain it.",
     },
     {
       id: 19,
@@ -200,6 +235,8 @@ const tasks: {
       updated_at: "2023-11-14T13:20:00.000Z",
       priority: Priority.MEDIUM,
       assignee: "Jane Smith",
+      description:
+        "Finally saying goodbye to the CRM system that never loved us back.",
     },
     {
       id: 20,
@@ -210,6 +247,7 @@ const tasks: {
       updated_at: "2023-11-18T11:40:00.000Z",
       priority: Priority.LOW,
       assignee: "Michael Johnson",
+      description: "Because data looks best when exported... and ignored.",
     },
     {
       id: 21,
@@ -220,6 +258,8 @@ const tasks: {
       updated_at: "2023-11-22T09:55:00.000Z",
       priority: Priority.MEDIUM,
       assignee: "Sarah Kim",
+      description:
+        "Making sure our landing page is prettier than the competition’s cat memes.",
     },
     {
       id: 22,
@@ -230,6 +270,8 @@ const tasks: {
       updated_at: "2023-11-26T14:30:00.000Z",
       priority: Priority.LOW,
       assignee: "Alex Patel",
+      description:
+        "Helping users stay informed—without overdoing it and becoming spam.",
     },
     {
       id: 23,
@@ -240,6 +282,8 @@ const tasks: {
       updated_at: "2023-12-01T17:20:00.000Z",
       priority: Priority.MEDIUM,
       assignee: "Samantha Flores",
+      description:
+        "Because everyone should be able to enjoy our website... even on dial-up!",
     },
     {
       id: 24,
@@ -250,6 +294,8 @@ const tasks: {
       updated_at: "2023-12-04T11:10:00.000Z",
       priority: Priority.HIGH,
       assignee: "Emily Davis",
+      description:
+        "Because why reinvent the wheel when you can borrow someone else’s APIs?",
     },
     {
       id: 25,
@@ -260,6 +306,8 @@ const tasks: {
       updated_at: "2023-12-08T15:45:00.000Z",
       priority: Priority.MEDIUM,
       assignee: "David Lee",
+      description:
+        "Our attempt to catch bugs before they catch us by surprise on release day.",
     },
   ],
 };

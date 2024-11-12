@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
     Dialog,
     DialogContent,
@@ -22,6 +22,8 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { ArrowLeft, ArrowRight } from "lucide-react";
+import { Task, TaskStatus } from "@/lib/definitions";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
@@ -36,10 +38,18 @@ const TaskDetailModal = ({
     onNextTask,
     onPreviousTask,
     onStatusChange,
-    tasks
-}) => {
+}: {
+    isOpen: boolean;
+    onClose: () => void;
+    task: Task | null;
+    onNextTask: () => void;
+    onPreviousTask: () => void;
+    onStatusChange: (taskId: number, newStatus: TaskStatus) => Promise<void>;
+}
+
+) => {
     const [comment, setComment] = useState('');
-    const [comments, setComments] = useState([]);
+    const [comments, setComments] = useState<{ id: number; content: string; name_of_sender: string; created_at: string }[]>([]);
     const [showStatusConfirmation, setShowStatusConfirmation] = useState(false);
     const [newStatus, setNewStatus] = useState('');
 
@@ -109,11 +119,11 @@ const TaskDetailModal = ({
                                 #{task.id} {task.name}
                             </DialogTitle>
                             <div className="flex items-center space-x-2">
-                                <Button variant="outline" size="sm" onClick={onPreviousTask}>
-                                    ← Previous
+                                <Button className='rounded-full' variant="ghost" size="sm" onClick={onPreviousTask}>
+                                    <ArrowLeft />
                                 </Button>
-                                <Button variant="outline" size="sm" onClick={onNextTask}>
-                                    Next →
+                                <Button className='rounded-full' variant="ghost" size="sm" onClick={onNextTask}>
+                                    <ArrowRight />
                                 </Button>
                             </div>
                         </div>
@@ -123,7 +133,7 @@ const TaskDetailModal = ({
                         <div className="col-span-2 space-y-4">
                             <div className="space-y-2">
                                 <h3 className="font-semibold">Description</h3>
-                                <p className="text-muted-foreground">
+                                <p className="text-muted-foreground max-w-[60ch]">
                                     {task.description || "No description provided"}
                                 </p>
                             </div>
@@ -176,7 +186,7 @@ const TaskDetailModal = ({
 
                             <div>
                                 <h3 className="font-semibold mb-2">Priority</h3>
-                                <Badge className="bg-red-500">{task.priority}</Badge>
+                                <Badge className="bg-red-500">{task.priority.toUpperCase()}</Badge>
                             </div>
 
                             <div>

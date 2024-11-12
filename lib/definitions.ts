@@ -14,6 +14,7 @@ export type Task = {
   updated_at: string;
   priority: Priority;
   assignee: string;
+  description?: string;
 };
 
 export const enum TaskStatus {
