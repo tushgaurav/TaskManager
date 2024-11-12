@@ -16,6 +16,15 @@ import { format } from 'date-fns';
 import TaskDetailModal from '@/app/_components/task-detail';
 import { getTasks } from '@/lib/db';
 import { Priority, Task, TaskStatus } from '@/lib/definitions';
+import { Input } from '@/components/ui/input';
+import { ChevronUp, ChevronDown } from 'lucide-react';
+
+type SortDirection = 'asc' | 'desc';
+
+interface SortState {
+  field: keyof Task | '';
+  direction: SortDirection;
+}
 
 const HomePage = () => {
   const [selectedTab, setSelectedTab] = useState<TaskStatus>(TaskStatus.OPEN);
@@ -28,6 +37,11 @@ const HomePage = () => {
     [TaskStatus.OPEN]: getTasks(TaskStatus.OPEN),
     [TaskStatus.IN_PROGRESS]: getTasks(TaskStatus.IN_PROGRESS),
     [TaskStatus.CLOSED]: getTasks(TaskStatus.CLOSED),
+  });
+  const [search, setSearch] = useState('');
+  const [sort, setSort] = useState<SortState>({
+    field: '',
+    direction: 'asc',
   });
 
   // Keyboard navigation
@@ -96,8 +110,6 @@ const HomePage = () => {
       updatedTasks[newStatus].push(movedTask);
       setTasks(updatedTasks);
     }
-
-    handleModalClose();
   };
 
   const getPriorityColor = (priority: Priority) => {
@@ -115,8 +127,105 @@ const HomePage = () => {
     }
   };
 
+  // const renderTaskTable = (tasks: Task[]) => (
+  //   <div className="border rounded-md">
+  //     <Table>
+  //       <TableHeader>
+  //         <TableRow>
+  //           <TableHead>Priority</TableHead>
+  //           <TableHead>ID</TableHead>
+  //           <TableHead>Name</TableHead>
+  //           <TableHead>Labels</TableHead>
+  //           <TableHead>Status</TableHead>
+  //           <TableHead>Created</TableHead>
+  //           <TableHead>Assignee</TableHead>
+  //         </TableRow>
+  //       </TableHeader>
+  //       <TableBody>
+  //         {tasks.map((task, index) => (
+  //           <TableRow
+  //             key={task.id}
+  //             className={`cursor-pointer ${selectedRowIndex === index ? 'bg-muted' : ''}`}
+  //             onClick={() => {
+  //               setSelectedRowIndex(index);
+  //               handleTaskSelect(task);
+  //             }}
+  //           >
+  //             <TableCell>
+  //               <Badge className={`${getPriorityColor(task.priority)}`}>
+  //                 {task.priority}
+  //               </Badge>
+  //             </TableCell>
+  //             <TableCell>#{task.id}</TableCell>
+  //             <TableCell className="font-medium">{task.name}</TableCell>
+  //             <TableCell>
+  //               {task.labels.map(label => (
+  //                 <Badge key={label} variant="outline" className="mr-1">
+  //                   {label}
+  //                 </Badge>
+  //               ))}
+  //             </TableCell>
+  //             <TableCell>{task.status}</TableCell>
+  //             <TableCell>{format(new Date(task.created_at), 'MMM dd, yyyy')}</TableCell>
+  //             <TableCell>{task.assignee}</TableCell>
+  //           </TableRow>
+  //         ))}
+  //       </TableBody>
+  //     </Table>
+  //   </div>
+  // );
+
+  const filteredAndSortedTasks = () => {
+    let currentTasks = tasks[selectedTab];
+    currentTasks = currentTasks.filter((task) =>
+      task.name.toLowerCase().includes(search.toLowerCase())
+    );
+
+    if (sort.field) {
+      currentTasks = currentTasks.sort((a, b) => {
+        const aValue = a[sort.field];
+        const bValue = b[sort.field];
+        if (aValue < bValue) return sort.direction === 'asc' ? -1 : 1;
+        if (aValue > bValue) return sort.direction === 'asc' ? 1 : -1;
+        return 0;
+      });
+    }
+
+    return currentTasks;
+  };
+
+  const handleSort = (field: keyof Task) => {
+    setSort((prev) => ({
+      field,
+      direction: prev.field === field && prev.direction === 'asc' ? 'desc' : 'asc',
+    }));
+  };
+
   const renderTaskTable = (tasks: Task[]) => (
     <div className="border rounded-md">
+      <div className="flex items-center justify-between p-4 border-b">
+        <Input
+          placeholder="Search tasks..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="max-w-sm"
+        />
+        <div className="flex items-center space-x-2">
+          {['Priority', 'ID', 'Name', 'Status', 'Created'].map((field) => (
+            <button
+              key={field}
+              className="flex items-center space-x-1 text-muted-foreground hover:text-foreground"
+              onClick={() => handleSort(field.toLowerCase() as keyof Task)}
+            >
+              {field}
+              {sort.field === field.toLowerCase() && (
+                <span>{sort.direction === 'asc' ? <ChevronUp /> : <ChevronDown />}</span>
+              )}
+            </button>
+          ))}
+        </div>
+      </div>
+
       <Table>
         <TableHeader>
           <TableRow>
@@ -130,7 +239,7 @@ const HomePage = () => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {tasks.map((task, index) => (
+          {filteredAndSortedTasks().map((task, index) => (
             <TableRow
               key={task.id}
               className={`cursor-pointer ${selectedRowIndex === index ? 'bg-muted' : ''}`}
