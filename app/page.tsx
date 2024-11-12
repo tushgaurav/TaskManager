@@ -1,101 +1,210 @@
-import Image from "next/image";
+"use client"
 
-export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+import React, { useState } from 'react';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { useHotkeys } from 'react-hotkeys-hook';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { Badge } from '@/components/ui/badge';
+import { format } from 'date-fns';
+import TaskDetailModal from '@/app/_components/task-detail';
+import { getTasks } from '@/lib/db';
+import { Priority, Task, TaskStatus } from '@/lib/definitions';
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+const HomePage = () => {
+  const [selectedTab, setSelectedTab] = useState<TaskStatus>(TaskStatus.OPEN);
+  const [selectedRowIndex, setSelectedRowIndex] = useState(0);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+  const [tasks, setTasks] = useState<{
+    [key in TaskStatus]: Task[];
+  }>({
+    [TaskStatus.OPEN]: getTasks(TaskStatus.OPEN),
+    [TaskStatus.IN_PROGRESS]: getTasks(TaskStatus.IN_PROGRESS),
+    [TaskStatus.CLOSED]: getTasks(TaskStatus.CLOSED),
+  });
+
+  // Keyboard navigation
+  useHotkeys('up', (e) => {
+    e.preventDefault();
+    setSelectedRowIndex(prev => Math.max(0, prev - 1));
+  });
+
+  useHotkeys('down', (e) => {
+    e.preventDefault();
+    const currentTasks = tasks[selectedTab] || [];
+    setSelectedRowIndex(prev => Math.min(currentTasks.length - 1, prev + 1));
+  });
+
+  useHotkeys('enter', (e) => {
+    e.preventDefault();
+    const currentTasks = tasks[selectedTab] || [];
+    if (currentTasks[selectedRowIndex]) {
+      handleTaskSelect(currentTasks[selectedRowIndex]);
+    }
+  });
+
+  const handleTaskSelect = (task: Task) => {
+    setSelectedTask(task);
+    setIsModalOpen(true);
+  };
+
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+    setSelectedTask(null);
+  };
+
+  const handleNextTask = () => {
+    const currentTasks = tasks[selectedTab] || [];
+    if (selectedTask) {
+      const currentIndex = currentTasks.findIndex(task => task.id === selectedTask.id);
+      if (currentIndex < currentTasks.length - 1) {
+        setSelectedTask(currentTasks[currentIndex + 1]);
+        setSelectedRowIndex(currentIndex + 1);
+      }
+    }
+  };
+
+  const handlePreviousTask = () => {
+    const currentTasks = tasks[selectedTab] || [];
+    if (selectedTask) {
+      const currentIndex = currentTasks.findIndex(task => task.id === selectedTask.id);
+      if (currentIndex > 0) {
+        setSelectedTask(currentTasks[currentIndex - 1]);
+        setSelectedRowIndex(currentIndex - 1);
+      }
+    }
+  };
+
+  const handleStatusChange = async (taskId: number, newStatus: TaskStatus) => {
+    // Update local state
+    const updatedTasks = { ...tasks };
+    const oldStatus = selectedTask?.status as TaskStatus;
+
+    // Remove from old status array
+    const taskIndex = updatedTasks[oldStatus].findIndex(task => task.id === taskId);
+    if (taskIndex !== -1) {
+      const [movedTask] = updatedTasks[oldStatus].splice(taskIndex, 1);
+      // Add to new status array with updated status
+      movedTask.status = newStatus;
+      updatedTasks[newStatus].push(movedTask);
+      setTasks(updatedTasks);
+    }
+
+    handleModalClose();
+  };
+
+  const getPriorityColor = (priority: Priority) => {
+    switch (priority) {
+      case Priority.URGENT:
+        return 'bg-red-500';
+      case Priority.HIGH:
+        return 'bg-orange-500';
+      case Priority.MEDIUM:
+        return 'bg-yellow-500';
+      case Priority.LOW:
+        return 'bg-blue-500';
+      default:
+        return 'bg-blue-500';
+    }
+  };
+
+  const renderTaskTable = (tasks: Task[]) => (
+    <div className="border rounded-md">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Priority</TableHead>
+            <TableHead>ID</TableHead>
+            <TableHead>Name</TableHead>
+            <TableHead>Labels</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead>Created</TableHead>
+            <TableHead>Assignee</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {tasks.map((task, index) => (
+            <TableRow
+              key={task.id}
+              className={`cursor-pointer ${selectedRowIndex === index ? 'bg-muted' : ''}`}
+              onClick={() => {
+                setSelectedRowIndex(index);
+                handleTaskSelect(task);
+              }}
+            >
+              <TableCell>
+                <Badge className={`${getPriorityColor(task.priority)}`}>
+                  {task.priority}
+                </Badge>
+              </TableCell>
+              <TableCell>#{task.id}</TableCell>
+              <TableCell className="font-medium">{task.name}</TableCell>
+              <TableCell>
+                {task.labels.map(label => (
+                  <Badge key={label} variant="outline" className="mr-1">
+                    {label}
+                  </Badge>
+                ))}
+              </TableCell>
+              <TableCell>{task.status}</TableCell>
+              <TableCell>{format(new Date(task.created_at), 'MMM dd, yyyy')}</TableCell>
+              <TableCell>{task.assignee}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
     </div>
   );
-}
+
+  return (
+    <div className="container mx-auto py-6">
+      <Tabs
+        defaultValue={TaskStatus.OPEN}
+        className="w-full"
+        onValueChange={(value) => setSelectedTab(value as TaskStatus)}
+      >
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value={TaskStatus.OPEN}>
+            Open ({tasks[TaskStatus.OPEN]?.length || 0})
+          </TabsTrigger>
+          <TabsTrigger value={TaskStatus.IN_PROGRESS}>
+            In Progress ({tasks[TaskStatus.IN_PROGRESS]?.length || 0})
+          </TabsTrigger>
+          <TabsTrigger value={TaskStatus.CLOSED}>
+            Closed ({tasks[TaskStatus.CLOSED]?.length || 0})
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value={TaskStatus.OPEN}>
+          {renderTaskTable(tasks[TaskStatus.OPEN])}
+        </TabsContent>
+
+        <TabsContent value={TaskStatus.IN_PROGRESS}>
+          {renderTaskTable(tasks[TaskStatus.IN_PROGRESS])}
+        </TabsContent>
+
+        <TabsContent value={TaskStatus.CLOSED}>
+          {renderTaskTable(tasks[TaskStatus.CLOSED])}
+        </TabsContent>
+
+        <TaskDetailModal
+          isOpen={isModalOpen}
+          onClose={handleModalClose}
+          task={selectedTask}
+          onNextTask={handleNextTask}
+          onPreviousTask={handlePreviousTask}
+          onStatusChange={handleStatusChange}
+        />
+      </Tabs>
+    </div>
+  );
+};
+
+export default HomePage;
