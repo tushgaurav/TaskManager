@@ -1,5 +1,7 @@
 # TaskManager Frontend
 
+![TaskManager](/screenshot.png)
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Running Application Locally
@@ -24,6 +26,11 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 - Fully accessible through keyboard.
 - Filters and search implemented in task table.
 - Minimilstic and simple design.
+
+## Performance Report
+
+[PageSpeed Report](https://pagespeed.web.dev/analysis/https-sdtaskman-vercel-app/y0ll47s5b8?form_factor=desktop)
+ ![Performance](/performance.png)
 
 ## Design Choices
 - **Next.js**: I chose Next.js because it is a React framework that allows for server-side rendering and static site generation. This is important for SEO and performance. It also has a lot of built-in features like image optimization and internationalization.
