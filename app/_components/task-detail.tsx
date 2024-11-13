@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, SyntheticEvent } from 'react';
 import {
     Dialog,
     DialogContent,
@@ -12,16 +12,6 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { Task, TaskStatus } from "@/lib/definitions";
 import { Button } from "@/components/ui/button";
@@ -50,10 +40,8 @@ const TaskDetailModal = ({
 ) => {
     const [comment, setComment] = useState('');
     const [comments, setComments] = useState<{ id: number; content: string; name_of_sender: string; created_at: string }[]>([]);
-    const [showStatusConfirmation, setShowStatusConfirmation] = useState(false);
-    const [newStatus, setNewStatus] = useState('');
 
-    // Mock comments - in real app, fetch from API
+    // Mock comments
     useEffect(() => {
         if (task) {
             setComments([
@@ -78,21 +66,15 @@ const TaskDetailModal = ({
         onNextTask();
     });
 
-    useHotkeys('1', () => handleStatusSelect('open'));
-    useHotkeys('2', () => handleStatusSelect('in-progress'));
-    useHotkeys('3', () => handleStatusSelect('closed'));
+    useHotkeys('1', () => handleStatusSelect('open' as TaskStatus));
+    useHotkeys('2', () => handleStatusSelect('in-progress' as TaskStatus));
+    useHotkeys('3', () => handleStatusSelect('closed' as TaskStatus));
 
-    const handleStatusSelect = (status) => {
-        setNewStatus(status);
-        setShowStatusConfirmation(true);
+    const handleStatusSelect = async (status: TaskStatus) => {
+        await onStatusChange(task!.id, status as TaskStatus);
     };
 
-    const handleStatusConfirm = async () => {
-        await onStatusChange(task.id, newStatus);
-        setShowStatusConfirmation(false);
-    };
-
-    const handleCommentSubmit = (e) => {
+    const handleCommentSubmit = (e: SyntheticEvent) => {
         e.preventDefault();
         if (!comment.trim()) return;
 
@@ -111,8 +93,8 @@ const TaskDetailModal = ({
 
     return (
         <>
-            <Dialog open={isOpen} onOpenChange={onClose} className="max-w-4xl">
-                <DialogContent className="max-w-4xl max-h-[90vh] flex flex-col">
+            <Dialog open={isOpen} onOpenChange={onClose}>
+                <DialogContent className="max-w-4xl max-h-[90vh] flex flex-col [&>button]:hidden">
                     <DialogHeader>
                         <div className="flex items-center justify-between">
                             <DialogTitle className="text-xl font-bold">
@@ -213,23 +195,6 @@ const TaskDetailModal = ({
                     </div>
                 </DialogContent>
             </Dialog>
-
-            <AlertDialog open={showStatusConfirmation} onOpenChange={setShowStatusConfirmation}>
-                <AlertDialogContent>
-                    <AlertDialogHeader>
-                        <AlertDialogTitle>Change Status</AlertDialogTitle>
-                        <AlertDialogDescription>
-                            Are you sure you want to change the status to {newStatus}?
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleStatusConfirm}>
-                            Confirm
-                        </AlertDialogAction>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
         </>
     );
 };

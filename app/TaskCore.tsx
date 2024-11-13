@@ -64,6 +64,26 @@ export default function TaskCore() {
         }
     });
 
+    const handleTabChange = (value: TaskStatus | string) => {
+        console.log("handleTabChange", value)
+        setSelectedTab(value as TaskStatus);
+    }
+
+    // hotkey for changing tabs using left and right and cycle through tabs
+    useHotkeys('left', (e) => {
+        e.preventDefault();
+        const tabs = [TaskStatus.OPEN, TaskStatus.IN_PROGRESS, TaskStatus.CLOSED];
+        const currentIndex = tabs.findIndex(tab => tab === selectedTab);
+        setSelectedTab(tabs[(currentIndex + tabs.length - 1) % tabs.length]);
+    });
+
+    useHotkeys('right', (e) => {
+        e.preventDefault();
+        const tabs = [TaskStatus.OPEN, TaskStatus.IN_PROGRESS, TaskStatus.CLOSED];
+        const currentIndex = tabs.findIndex(tab => tab === selectedTab);
+        setSelectedTab(tabs[(currentIndex + 1) % tabs.length]);
+    });
+
     const handleTaskSelect = (task: Task) => {
         setSelectedTask(task);
         setIsModalOpen(true);
@@ -135,12 +155,11 @@ export default function TaskCore() {
             currentTasks = currentTasks.sort((a, b) => {
                 const aValue = sort.field ? a[sort.field] : '';
                 const bValue = sort.field ? b[sort.field] : '';
-                if (aValue < bValue) return sort.direction === 'asc' ? -1 : 1;
-                if (aValue > bValue) return sort.direction === 'asc' ? 1 : -1;
+                if (aValue! < bValue!) return sort.direction === 'asc' ? -1 : 1;
+                if (aValue! > bValue!) return sort.direction === 'asc' ? 1 : -1;
                 return 0;
             });
         }
-
         return currentTasks;
     };
 
@@ -161,15 +180,15 @@ export default function TaskCore() {
                     className="max-w-sm"
                 />
                 <div className="flex items-center space-x-2">
-                    {['Priority', 'ID', 'Name', 'Status', 'Created'].map((field) => (
+                    {['Priority', 'ID', 'Name', 'Created'].map((field) => (
                         <button
                             key={field}
-                            className="flex items-center space-x-1 text-muted-foreground hover:text-foreground"
+                            className="flex items-center gap-1 text-xs bg-gray-200 rounded-full p-2 py-1 text-muted-foreground hover:text-foreground"
                             onClick={() => handleSort(field.toLowerCase() as keyof Task)}
                         >
                             {field}
                             {sort.field === field.toLowerCase() && (
-                                <span>{sort.direction === 'asc' ? <ChevronUp /> : <ChevronDown />}</span>
+                                <span>{sort.direction === 'asc' ? <ChevronUp className='w-4 h-4' /> : <ChevronDown className='w-4 h-4' />}</span>
                             )}
                         </button>
                     ))}
@@ -225,9 +244,10 @@ export default function TaskCore() {
     return (
 
         <Tabs
+            value={selectedTab}
             defaultValue={TaskStatus.OPEN}
             className="w-full"
-            onValueChange={(value) => setSelectedTab(value as TaskStatus)}
+            onValueChange={handleTabChange}
         >
             <TabsList className="grid w-full grid-cols-3">
                 <TabsTrigger value={TaskStatus.OPEN}>
